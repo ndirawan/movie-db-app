@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Movie DB App</string>
+    <string name="logo">Logo</string>
+    <string name="search_movie">Search Movie</string>
+    <string name="poster">Poster</string>
+    <string name="overview">Overview</string>
+    <string name="author">Andi Irawan</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
