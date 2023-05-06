@@ -3,8 +3,12 @@ package com.andi.movie_db_app.views
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -32,6 +36,7 @@ class MovieList : AppCompatActivity() {
         observeAnychangePopularMovie()
         setupRecyclerView()
 
+
         adapter?.onMivieClickListener(object: OnMovieClickListener{
             override fun onMoveClick(movies: Movies, genres: String) {
                 val intent = Intent(this@MovieList, MovieDetail::class.java)
@@ -56,14 +61,19 @@ class MovieList : AppCompatActivity() {
         }
     }
 
-    private fun observeAnychangePopularMovie() {
+
+    private fun observeAnychangePopularMovie(genreId:Int? =null) {
         viewModel.popularResponse.observe(this) {
             if (it != null) {
                 when (it) {
                     is RequestState.Loading -> showLoading()
                     is RequestState.Success -> {
                         hideLoading()
-                        it.data?.results?.let { data -> adapter?.differ?.submitList(data.toList()) }
+                        if(genreId == null){
+                            it.data?.results?.let { data -> adapter?.differ?.submitList(data.toList()) }
+                        }else{
+                            it.data?.results?.filter { it.genreIds?.contains(genreId) ?: false }?.let { data -> adapter?.differ?.submitList(data.toList()) }
+                        }
                     }
                     is RequestState.Error -> {
                         hideLoading()
@@ -75,11 +85,34 @@ class MovieList : AppCompatActivity() {
     }
 
     private fun requestThenObserveAnychangeGenres() {
+        val genreMap = HashMap<String?, Int?>()
+        val genreList = ArrayList<String?>()
         viewModel.getGenres().observe(this) {
             if (it != null) {
                 when (it) {
                     is RequestState.Loading -> {}
-                    is RequestState.Success -> it.data.genres?.let { data -> adapter?.setGenres(data) }
+                    is RequestState.Success -> {
+                        it.data.genres?.let { data -> adapter?.setGenres(data) }
+                        genreList.add("Genre")
+                        for (i in it.data.genres!!){
+                            genreMap.put(i.name, i.id)
+                            genreList.add(i.name)
+                        }
+                        val adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, genreList)
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+                        val spinner = binding.spGenre
+                        spinner.adapter = adapter
+
+                        spinner.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
+                            override fun onItemSelected(adapterView: AdapterView<*>, view: View?, position: Int, id: Long) {
+                                observeAnychangePopularMovie(genreMap.get(genreList[position]))
+                            }
+                            override fun onNothingSelected(adapterView: AdapterView<*>) {
+                                observeAnychangePopularMovie()
+                            }
+                        })
+                    }
                     is RequestState.Error -> Toast.makeText(this,it.message, Toast.LENGTH_LONG).show()
                 }
             }

@@ -1,6 +1,5 @@
 package com.andi.movie_db_app.viewmodels
 
-import android.graphics.Movie
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.andi.movie_db_app.api.RequestState
 import com.andi.movie_db_app.models.GenreResponse
 import com.andi.movie_db_app.models.MovieResponse
-import com.andi.movie_db_app.models.Movies
 import com.andi.movie_db_app.repositories.MoveiRepository
 import kotlinx.coroutines.launch
 import org.json.JSONException
@@ -28,7 +26,7 @@ class MovieViewModel: ViewModel() {
     private var _searchResponse = MutableLiveData<RequestState<MovieResponse?>>()
     var searchResponse: LiveData<RequestState<MovieResponse?>> = _searchResponse
 
-    fun getPopularMovie(genreId: Int? = null) {
+    fun getPopularMovie() {
         viewModelScope.launch {
             _popularResponse.postValue(RequestState.Loading)
             var response = repo.getPopularMovie(popularPage)
