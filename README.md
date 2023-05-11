@@ -7,7 +7,7 @@ Simple Android app consume API from themoviedb.com
 1. Download or clone this repository to your computer.
 2. Open the project using Android Studio.
 3. Make sure you have a stable internet connection because the application will fetch data from the themoviedb.com API.
-4. Open the build.gradle file and enter your API key from themoviedb.com. If you do not have an API key, you need to register first on their website.
+4. Open the app -> src -> build.gradle file and enter your API key from themoviedb.com. If you do not have an API key, you need to register first on their website.
 5. Run the application on an emulator or physical device.
 
 ## Features:
